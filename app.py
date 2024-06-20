@@ -48,16 +48,18 @@ def spy_pixel(recipient_email):
     try:
         service = get_google_sheets_service()
         sheet = service.spreadsheets()
-        sheet.values().append(spreadsheetId=SPREADSHEET_ID,
-                            range=RANGE_NAME,
-                            valueInputOption='RAW',
-                            insertDataOption='INSERT_ROWS',
-                            body={'values': [log_entry]}).execute()
+        result = sheet.values().append(spreadsheetId=SPREADSHEET_ID,
+                                       range=RANGE_NAME,
+                                       valueInputOption='RAW',
+                                       insertDataOption='INSERT_ROWS',
+                                       body={'values': [log_entry]}).execute()
+        logging.info(f"Successfully wrote to Google Sheets: {result}")
     except Exception as e:
         logging.error(f"Error writing to Google Sheets: {e}")
         return "Internal Server Error", 500
 
     return send_file(filename, mimetype="image/png")
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
